@@ -18,7 +18,7 @@
             "E-mail:": "mail"
         }
 
-3. tables and : seperated
+3. tables and : seperated, to stop parsing paragraphs for value to one field if next paragraph is keyword
 
         non_p_keywords = [
                     "Course Content", #tabelle

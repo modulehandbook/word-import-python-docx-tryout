@@ -161,4 +161,10 @@ if __name__ == '__main__':
 
     document_path = sys.argv[1]
     info = extract_info(document_path)
+
+    output_path = 'output/output_old.json'
+
+    with open(output_path, 'w', encoding='utf-8') as json_file:
+        json.dump(info, json_file, indent=4)
+
     print(json.dumps(info, indent=4))
