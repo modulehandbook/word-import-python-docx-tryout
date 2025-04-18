@@ -21,9 +21,6 @@ def extract_info_from_paragraphs(document):
     collecting_text = ""
 
     p_keywords = {
-
-        # 1. paragraph überschrift
-        # 2. darunter inhalt
         "Course Aim": "mission",
         "Knowledge and Understanding": "skills_knowledge_understanding",
         "Intellectual Skills": "skills_intellectual",
@@ -33,16 +30,11 @@ def extract_info_from_paragraphs(document):
         "Learning and Teaching Methods": "methods",
         "Facilities Required For Teaching and Learning": "equipment",
         "References": "literature",
-
-
-# c-Administrative Information fields
-# in einem paragraph, durch : getrennt
-
         "Head of the Department:": "department_head",
         "Course Coordinator:": "responsible_person",
         "E-mail:": "mail"
     }
-    # tables and : seperated
+
     non_p_keywords = [
         "Course Content",
         "Assessment",
