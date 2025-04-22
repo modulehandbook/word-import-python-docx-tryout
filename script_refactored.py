@@ -120,7 +120,7 @@ class TableExtractor:
         headers = [cell.text.strip() for cell in table.rows[0].cells]
         sub_headers = [cell.text.strip() for cell in table.rows[1].cells]
 
-        for row in table.rows[2:]:
+        for row in table.rows[2:-1]:
             row_data = {}
 
             for i, cell in enumerate(row.cells):
