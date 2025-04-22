@@ -103,8 +103,18 @@ class TableExtractor:
         return extracted_data
 
     def _extract_info_course_info_table(self, table):
+        # noch in config tun ???? --> braucht überhaupt??
+        semester_map = {
+            "first semester" : 1,
+            "second semester" : 2,
+            "third semester" : 3,
+            "fourth semester" : 4,
+            "fifth semester" : 5,
+            "sixth semester" : 6,
+        }
+
         extracted_data = {
-            "semester": table.rows[0].cells[1].text,
+            "semester": semester_map[table.rows[0].cells[1].text.lower()],
             "required": table.rows[5].cells[1].text,
             "ects": table.rows[8].cells[1].text
         }
