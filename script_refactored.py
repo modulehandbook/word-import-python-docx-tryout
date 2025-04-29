@@ -127,21 +127,18 @@ class TableExtractor:
 
     def _extract_info_content_table(self, table):
         table_data = []
-        headers = [cell.text.strip() for cell in table.rows[0].cells]
         sub_headers = [cell.text.strip() for cell in table.rows[1].cells]
 
         for row in table.rows[2:-1]:
-            row_data = {}
+            row_data = {"Topic": row.cells[0].text.strip()}
 
-            for i, cell in enumerate(row.cells):
-                header = headers[i]
-                sub_header = sub_headers[i]
-                cell_text = cell.text.strip()
+            teaching_hours = []
+            for index in range(1, len(row.cells)):
+                cell_text = row.cells[index].text.strip()
+                teaching_hours.append(cell_text if cell_text else "0")
 
-                if sub_header:
-                    row_data.setdefault(header, {})[sub_header] = cell_text
-                else:
-                    row_data[header] = cell.text.strip()
+            subheader_path = "/".join([sub for i, sub in enumerate(sub_headers[1:], start=1) if sub])
+            row_data[f"No. of Teaching Hours {subheader_path}"] = "/".join(teaching_hours)
 
             table_data.append(row_data)
         return table_data
