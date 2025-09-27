@@ -154,18 +154,44 @@ class TableExtractor:
         table_data = []
         sub_headers = [cell.text.strip() for cell in table.rows[1].cells]
 
-        for row in table.rows[2:-1]:
+        # Initialize totals
+        total_hours = [0] * (len(sub_headers) - 1)  # exclude first column 'Topic'
+
+        for row in table.rows[2:-1]:  # skip header and last row
             row_data = {"Topic": row.cells[0].text.strip()}
 
             teaching_hours = []
             for index in range(1, len(row.cells)):
                 cell_text = row.cells[index].text.strip()
-                teaching_hours.append(cell_text if cell_text else "0")
+                if not cell_text:
+                    cell_text = "0"
+                teaching_hours.append(cell_text)
+
+                # accumulate totals
+                if '/' in cell_text:  # e.g., "2/2"
+                    parts = cell_text.split('/')
+                    for i, part in enumerate(parts):
+                        try:
+                            total_hours[i] += int(part)
+                        except ValueError:
+                            pass
+                else:
+                    try:
+                        total_hours[index - 1] += int(cell_text)
+                    except ValueError:
+                        pass
 
             subheader_path = "/".join([sub for i, sub in enumerate(sub_headers[1:], start=1) if sub])
-            row_data[f"No. of Teaching Hours {subheader_path}"] = "/".join(teaching_hours)
+            row_data[f"No. of Teaching Hours: {subheader_path}"] = "/".join(teaching_hours)
 
             table_data.append(row_data)
+
+        # Append total row
+        if any(total_hours):
+            total_row = {"Topic": "Total Hours"}
+            total_row[f"No. of Teaching Hours: {subheader_path}"] = "/".join(str(h) for h in total_hours)
+            table_data.append(total_row)
+
         return table_data
 
     def _extract_info_assessment_table(self, table):
@@ -197,7 +223,7 @@ class TableExtractor:
         return session_hours
 
     def _split_sessions_into_categories(self, session_string: str) -> list:
-        return re.split(r' \+ |, ', session_string)
+        return re.split(r'\s*(?:\+|,|and)\s*', session_string, flags=re.IGNORECASE)
 
     def _calculate_sws(self, session_string: str) -> int:
         session_string = session_string.strip()
