@@ -9,9 +9,9 @@
     "Learning and Teaching Methods": "methods",
     "Facilities Required For Teaching and Learning": "equipment",
     "References": "literature",
-    "Head of the Department:": "department_head",
+    "Head of the Department:": "head_of_department",
     "Course Coordinator:": "responsible_person",
-    "E-mail:": "mail"
+    "E-mail:": "responsible_person_mail"
   },
 
   "non_paragraph_keywords": [

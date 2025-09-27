@@ -11,9 +11,15 @@ class ConfigLoader:
             return json.load(file)
 
 class CourseDocumentParser:
-    def __init__(self, document_path, config_path):
-        self.document_path = document_path
-        self.document = Document(document_path)
+    def __init__(self, document_source, config_path, raw_mode=False):
+        """
+        document_source: either a file path (default) or a pre-split Document object if raw_mode=True
+        """
+        if raw_mode:
+            self.document = document_source
+        else:
+            self.document = Document(document_source)
+
         self.config = ConfigLoader.load_config(config_path)
 
         self.paragraph_mapping_keywords = self.config["paragraph_keywords"]
@@ -44,6 +50,8 @@ class ParagraphExtractor:
 
         extracted_data["name"] = self._extract_name(paragraphs[0])
         extracted_data["code"] = self._extract_code(paragraphs[0])
+
+        print(extracted_data["name"]) #!!!!!!!!!!!!!!!!!!
 
         current_field_keyword = None
         current_field_value = ""
@@ -92,13 +100,25 @@ class TableExtractor:
         self.tables = tables
 
     def extract_table_data(self):
-        course_info_table = self.tables[0]
-        contents_table = self.tables[1]
-        assessment_table = self.tables[2]
+        extracted_data = {}
 
-        extracted_data = self._extract_info_course_info_table(course_info_table)
-        extracted_data["contents"] = self._extract_info_content_table(contents_table)
-        extracted_data["examination"] = self._extract_info_assessment_table(assessment_table)
+        # Course info table
+        if len(self.tables) > 0:
+            extracted_data.update(self._extract_info_course_info_table(self.tables[0]))
+        else:
+            raise ValueError("Course info table is missing!")
+
+        # Contents table
+        if len(self.tables) > 1:
+            extracted_data["contents"] = self._extract_info_content_table(self.tables[1])
+        else:
+            extracted_data["contents"] = []
+
+        # Assessment table
+        if len(self.tables) > 2:
+            extracted_data["examination"] = self._extract_info_assessment_table(self.tables[2])
+        else:
+            extracted_data["examination"] = []
 
         return extracted_data
 
@@ -111,10 +131,15 @@ class TableExtractor:
             "fourth semester" : 4,
             "fifth semester" : 5,
             "sixth semester" : 6,
+            "seventh semester" : 7,
+            "eighth semester" : 8
         }
 
         extracted_data = {
             "semester": semester_map[table.rows[0].cells[1].text.lower()],
+            "semester_type": table.rows[1].cells[1].text,
+            "department": table.rows[3].cells[1].text,
+            "specialization": table.rows[4].cells[1].text,
             "required": table.rows[5].cells[1].text,
             "ects": table.rows[8].cells[1].text
         }
@@ -175,17 +200,23 @@ class TableExtractor:
         return re.split(r' \+ |, ', session_string)
 
     def _calculate_sws(self, session_string: str) -> int:
+        session_string = session_string.strip()
+
+        match = re.match(r'(\d+)', session_string)
+        if not match:
+            return 0
+
+        number = int(match.group(1))
+
         if re.search(r'bi\s*-?\s*weekly', session_string.lower()):
-            number = int(session_string.split()[0])
             return number
         else:
-            number = int(session_string.split()[0])
             return number * 2
 
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:
-        print("Usage: python main.py <document_path>")
+        print("Usage:  python3 course_document_parser.py <document_path>")
         sys.exit(1)
 
     document_path = sys.argv[1]
