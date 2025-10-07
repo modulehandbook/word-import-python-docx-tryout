@@ -1,0 +1,23 @@
+{
+  "paragraph_keywords": {
+    "Course Aim": "mission",
+    "Knowledge and Understanding": "skills_knowledge_understanding",
+    "Intellectual Skills": "skills_intellectual",
+    "Professional and Practical Skills": "skills_practical",
+    "General and Transferable Skills": "skills_general",
+    "General and Transferrable Skills": "skills_general",
+    "Learning and Teaching Methods": "methods",
+    "Facilities Required For Teaching and Learning": "equipment",
+    "References": "literature",
+    "Head of the Department:": "head_of_department",
+    "Course Coordinator:": "responsible_person",
+    "E-mail:": "responsible_person_mail"
+  },
+
+  "non_paragraph_keywords": [
+    "Course Content",
+    "Assessment",
+    "Learning Outcomes",
+    "C- Administrative Information"
+  ]
+}
