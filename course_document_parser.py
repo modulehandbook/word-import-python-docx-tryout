@@ -135,6 +135,11 @@ class TableExtractor:
             "eighth semester" : 8
         }
 
+        rows = table.rows
+        if len(rows) < 9 or any(len(r.cells) < 2 for r in rows[:9]):
+            print("[WARNING] Course info table does not have enough rows or cells.")
+            return extracted_data
+
         extracted_data = {
             "semester": semester_map[table.rows[0].cells[1].text.lower()],
             "semester_type": table.rows[1].cells[1].text,

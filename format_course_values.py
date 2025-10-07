@@ -1,4 +1,5 @@
 import json
+import sys
 
 def format_literature_md(text):
     """
@@ -59,15 +60,23 @@ def markdownify_course(course):
 
 
 if __name__ == "__main__":
+    
+    if len(sys.argv) < 3:
+        print("Usage: python3 format_course_values.py <input_json> <output_json>")
+        sys.exit(1)
+
+    input_path = sys.argv[1]
+    output_path = sys.argv[2]
+
     # Load original JSON
-    with open("output/program_output.json", "r", encoding="utf-8") as f:
+    with open(input_path, "r", encoding="utf-8") as f:
         data = json.load(f)
 
     md_data = dict(data)
     md_data["courses"] = [markdownify_course(c) for c in data.get("courses", [])]
 
     # Save transformed JSON with Markdown-ready values
-    with open("output/program_output_md.json", "w", encoding="utf-8") as f:
+    with open(output_path, "w", encoding="utf-8") as f:
         json.dump(md_data, f, indent=4, ensure_ascii=False)
 
-    print("Markdown-ready JSON saved to output/program_output_md.json")
+    print(f"[INFO] Formatted program data saved to {output_path}")
